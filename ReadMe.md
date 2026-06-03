@@ -26,7 +26,7 @@ Application Overview
 - Deployment: Render.com 
 
 # Live URL
-https://fe-todo-git-nyfj.onrender.com/
+https://fe-todo-dxu2.onrender.com
 
 
 ### Prerequisites
@@ -76,8 +76,7 @@ How to run Locally?
 --------------------
 # Clone the repository
 -In terminal
-git clone https://github.com/Chimirinzin99/Chimirinzin99-Chimirinzin_02250346_DSO101_A1.git
-
+git clone https://github.com/rabten93/TenzinRabten_02250375_DSO101_A1.git
 # Create database
 psql -U postgres -c "CREATE DATABASE tododb;"
 
