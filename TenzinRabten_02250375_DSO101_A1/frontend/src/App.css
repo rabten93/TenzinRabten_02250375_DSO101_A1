@@ -1,0 +1,71 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f3f4f6;
+}
+
+.container {
+  max-width: 600px;
+  margin: 60px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #2563eb;
+}
+
+.subtitle {
+  text-align: center;
+  color: #6b7280;
+}
+
+.todo-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+button {
+  padding: 12px 16px;
+  border: none;
+  background-color: #2563eb;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1d4ed8;
+}
+
+.todo-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.todo-item span {
+  flex: 1;
+  cursor: pointer;
+}
+
+.completed {
+  text-decoration: line-through;
+  color: gray;
+}
