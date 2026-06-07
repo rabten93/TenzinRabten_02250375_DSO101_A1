@@ -1,128 +1,168 @@
-# TenzinRabten_02250375_DSO101_A1
-# To-Do List  - Continuous Integration and Continuous Deployment (DSO101)
-# Assignment 1
+# README for DSO101_A1
+# 02250375
+## Aim
+To containerise a full-stack To-Do application using Docker and deploy it on Render.com with automatic deployment using Render Blueprint.
 
--------------------
-Aim and Objectives
--------------------
+## Objectives
+- Create a Dockerfile for both frontend (React) and backend (Node.js/Express).
+- Push both Docker images to DockerHub with student ID as tag.
+- Set up a PostgreSQL database on Render.
+- Configure a render.yaml Blueprint file for multi-service deployment.
+- Deploy both services on Render.com such that they work together.
 
-To understand and implement CI/CD  using containerization and cloud platforms.
-To build a full‑stack application.
-Containerise the services with Docker and manage environment variables.
-Push Docker images to a registry (Docker Hub) and manually deploy them on a cloud platform (Render.com) 
-Automate the entire deployment using a render.yaml
+# BACKGROUND INFORMATION
 
----------------------------------------------------------------------------------------------------
-Repository URL = https://github.com/rabten93/TenzinRabten_02250375_DSO101_A1.git
----------------------------------------------------------------------------------------------------
+Containerisation packages an application with all its dependencies so it runs consistently anywhere. This project uses Docker to containerise a full-stack To-Do app and Render Blueprint to deploy both frontend and backend services automatically.
 
----------------------
-Application Overview
----------------------
+## Why Docker?
+Docker ensures the application runs the same way on my laptop, on a test server, and in production. For this assignment, I used Node.js Alpine base images to keep the containers small.
 
-- Frontend : React.js
-- Backend : Node.js + Express
-- Database : PostgreSQL
-- Deployment: Render.com 
+## Why Render Blueprint?
+Render Blueprint uses a render.yaml file to define multiple services that deploy together. Every time I push code to GitHub, Render automatically redeploys both services.
 
-# Live URL
-https://fe-todo-dxu2.onrender.com
+## Security
+Database credentials are stored in the render.yaml file as environment variables, not hard-coded in the application.
 
+## PROCEDURES
+Task 1: Backend Dockerfile
 
-### Prerequisites
-- Node.js (v18+)
-- PostgreSQL installed locally 
-- Docker
-- Git
+Created a Dockerfile in the backend folder:
 
---------------------------
-Implementation of steps
---------------------------
-[Part 0]
-- Set up project folders: backend/, frontend/.
-- Install necessary dependencies
-- Create PostgreSQL database locally (via pgAdmin4 or CREATE DATABASE tododb;).
-- In backend Write server.js with CRUD endpoints and database connection.
-- Create .env with local DB credentials (DB_HOST, DB_USER, etc.) and PORT=5000.
-- Build frontend using react 
-- App.js using axios to call backend API.
-- Create .env with REACT_APP_API_URL=http://localhost:5000.
-- Run locally
-- Test all CRUD operations (add, edit, complete, delete tasks). Tasks persist in PostgreSQL.
+FROM node:22-alpine
 
-[Part A]
-Write Dockerfiles:
-- Backend: FROM node:18-alpine, COPY package*.json ./, RUN npm install, COPY . ., EXPOSE 5000, CMD ["node","server.js"]
-- Frontend: multi‑stage build (build stage with npm run build, then copy to nginx:alpine).
-- Build Docker images:
-- docker build -t chimirinzin/be-todo:02250346 ./backend
-- docker build -t chimirinzin/fe-todo:02250346 ./frontend
-- Push images to Docker Hub:
-- docker push chimirinzin/be-todo:02250346
-- docker push chimirinzin/fe-todo:02250346
-On Render:
-- Create a free PostgreSQL database (todo-db). 
--Create a Web Service for backend, frontend and database
+WORKDIR /app
 
-[Part B]
-- Create render.yaml defining backend and frontend services + database 
-- Push everything to GitHub.
-- Deploy using Render 
+COPY package*.json ./
+RUN npm install
 
+COPY prisma ./prisma
+RUN npx prisma generate
 
+COPY . .
 
---------------------
-How to run Locally?
---------------------
-# Clone the repository
--In terminal
-git clone https://github.com/rabten93/TenzinRabten_02250375_DSO101_A1.git
-# Create database
-psql -U postgres -c "CREATE DATABASE tododb;"
+EXPOSE 5000
 
-# Backend
-cd backend
-npm install
-npm run dev         
+CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
 
-# Frontend 
-cd ../frontend
-npm install
-npm start         
+----
 
------------
-Reflection
------------
+Task 2: Frontend Dockerfile
 
-During this project, I created a CI/CD pipeline for a full-stack To-Do List application, advancing from local development to completely automated cloud deployment. In Part 0, I discovered the significance of environment variables and local testing, integrating React, Node.js, and PostgreSQL with effective CRUD operations.
+Created a Dockerfile in the frontend folder:
 
-In Part A, I utilized Docker to containerize both services, uploaded the images to Docker Hub using my student ID as the tag, and manually deployed everything to Render.com, which illustrated how cloud platforms handle databases and web services. 
+### Build stage
+FROM node:22-alpine AS builder
 
-In Part B, I streamlined the whole process by developing a render.yaml blueprint and linking Render directly to GitHub, enabling an automatic rebuild and redeployment of both frontend and backend with every git push. This task provided me with hands-on experience in current DevOps methodologies — containerization, CI/CD, infrastructure as code, and cloud deployment — and demonstrated the process of how applications move from a local development setting to a publicly accessible web application.
+WORKDIR /app
 
------------------------
-Problems and Solutions
------------------------
-Problem: Render spins down services after 15 minutes inactivity; first request takes ~50 seconds.
-Solution: use uptime monitor (UptimeRobot) to keep alive.
- 
-Problem 2: Frontend not connecting to backend
-Cause: set environment variable in frontend for REACT_APP_API_URL = Backend's URL
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+### Production stage
+FROM nginx:stable-alpine
+
+COPY --from=builder /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
+----
+
+Task 3: Build and Push Docker Images
+
+Built both images for the linux/amd64 platform (required by Render) and pushed to DockerHub.
+
+### Build backend
+docker build --platform linux/amd64 -t rabten93/be-todo:02250375 ./backend
+
+### Push backend
+docker push rabten93/be-todo:02250375
+
+### Build frontend
+docker build --platform linux/amd64 -t rabten93/fe-todo:02250375 ./frontend
+
+### Push frontend
++docker push rabten93/fe-todo:02250375
+
+----
+
+<br>
+Task 4: PostgreSQL Database on Render
+Created a PostgreSQL database on Render with the following details:
+<br>
+Field	Value
+<br>
+Hostname	dpg-d7tm9mho3t8c739les90-a
+<br>
+Username	todo_db_dy2w_user
+<br>
+Password	R6R0w9EHZmfCQAXpHpC15Q3Npwehu5Nw
+<br>
+Database	todo_db_dy2w
+![todo.png](image.png)
 
 
-------------------
-Learning Outcomes
-------------------
-- Set up a full‑stack application (frontend,backend,database)
-- Configure environment variables (.env files) to store sensitive data
-- Usage of (.gitignore).
-- Connect frontend to backend using environment variables.
-- Perform CRUD operations (Create, Read, Update, Delete) with a database.
-- To Write Dockerfiles for both frontend and backend services.
-- Build Docker images.
-- Push images to a Docker Hub.
-- Deploy a managed PostgreSQL database on Render.com.
-- To Write a render.yaml blueprint to define infrastructure as code (multi‑service setup).
-- Connect Render directly to your GitHub repository
+----
 
+Task 5: Render Blueprint File (render.yaml)
 
+Created render.yaml in the repository root:
+
+services:
+  - type: web
+    name: be-todo-api
+    env: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: DATABASE_URL
+        value: sha256:d97ae86adedf87b8704fc30a1a8bbf95b809e5e32b44162c3b74ae4ebc5d2689
+      - key: PORT
+        value: 5000
+
+  - type: web
+    name: fe-todo
+    env: docker
+    plan: free
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://be-todo-api.onrender.com
+<img src="images/be_todo.png" alt="Backend image on Docker Desktop"> 
+<img src="images/fe_todo.png" alt="Frontend image on Docker Desktop"> 
+
+<img src="images/dashboard.png" alt="DockerHub showing both images">
+
+----
+
+Task 6: Deploy on Render.com
+
+Render → New + → Blueprint
+Connected GitHub repository
+Applied the configuration from render.yaml
+
+Render automatically deployed both services.
+
+<img src="images/auto_deploy.png" alt="Render Auto-Deploy setting">
+
+## FINAL VERIFICATION
+<img src="images/dashboard.png" alt="Live frontend application"> 
+<img src="images/fe_todo.png" alt="Live frontend application"> 
+
+## CONCLUSION
+
+In this project, I successfully containerised a full-stack To-Do application using Docker. Separate Dockerfiles were created for the React frontend and Node.js backend. Both images were built and pushed to DockerHub using my student ID as the tag, and deployed on Render using a render.yaml Blueprint configuration.
+
+One major challenge was building Docker images for the correct platform. Since my system uses ARM64 architecture, I had to explicitly specify platform linux/amd64 to ensure compatibility with Render’s infrastructure.
+
+Another issue was enabling communication between the frontend and backend services. This was resolved by setting the REACT_APP_API_URL environment variable in the frontend service to point to the backend API.
+
+Additionally, configuring environment variables and database connectivity required careful attention, especially formatting the PostgreSQL connection string correctly.
+
+With everything configured, the deployment process is now fully automated. Any changes pushed to GitHub trigger a redeployment on Render, ensuring the application stays up to date. The final system is live, functional, and follows a proper CI/CD workflow.
