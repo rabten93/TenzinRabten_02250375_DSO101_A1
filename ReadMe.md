@@ -103,7 +103,7 @@ Username	todo_db_dy2w_user
 Password	R6R0w9EHZmfCQAXpHpC15Q3Npwehu5Nw
 <br>
 Database	todo_db_dy2w
-![todo.png](image.png)
+
 
 
 ----
@@ -134,10 +134,7 @@ services:
     envVars:
       - key: REACT_APP_API_URL
         value: https://be-todo-api.onrender.com
-<img src="images/be_todo.png" alt="Backend image on Docker Desktop"> 
-<img src="images/fe_todo.png" alt="Frontend image on Docker Desktop"> 
 
-<img src="images/dashboard.png" alt="DockerHub showing both images">
 
 ----
 
@@ -149,11 +146,8 @@ Applied the configuration from render.yaml
 
 Render automatically deployed both services.
 
-<img src="images/auto_deploy.png" alt="Render Auto-Deploy setting">
 
-## FINAL VERIFICATION
-<img src="images/dashboard.png" alt="Live frontend application"> 
-<img src="images/fe_todo.png" alt="Live frontend application"> 
+
 
 ## CONCLUSION
 
