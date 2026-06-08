@@ -1,4 +1,3 @@
-# TenzinRabten_02250375_DSO101_A1
 # README for DSO101_A1
 # 02250375
 ## Aim
